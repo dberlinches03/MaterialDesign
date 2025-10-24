@@ -13,6 +13,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shrine.network.ProductEntry
+import com.example.shrine.staggeredgridlayout.StaggeredProductCardRecyclerViewAdapter
 
 class ProductGridFragment : Fragment() {
 
@@ -34,12 +35,17 @@ class ProductGridFragment : Fragment() {
         (activity as AppCompatActivity).setSupportActionBar(appBar)
 
         recyclerView.setHasFixedSize(true)
-        recyclerView.layoutManager = GridLayoutManager(context, 2, RecyclerView.VERTICAL, false)
 
-        val adapter = ProductCardRecyclerViewAdapter (
+        val gridLayoutManager = GridLayoutManager(context, 2, RecyclerView.HORIZONTAL, false)
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (position % 3 == 2) 2 else 1
+            }
+        }
+        recyclerView.layoutManager = gridLayoutManager
+        val adapter = StaggeredProductCardRecyclerViewAdapter (
             ProductEntry.initProductEntryList(resources))
         recyclerView.adapter = adapter
-
         val largePadding = resources.getDimensionPixelSize(R.dimen.shr_product_grid_spacing)
         val smallPadding = resources.getDimensionPixelSize(R.dimen.shr_product_grid_spacing_small)
         recyclerView.addItemDecoration(ProductGridItemDecoration(largePadding, smallPadding))
